@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Contábil</title>
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css"/>
+    </h:head>
+
+    <h:body>
+        <p:fieldset legend="Contas" style="margin-bottom:20px">
+            <h:form id="form">
+                <p:growl id="msgs" showDetail="true" />             
+
+                <p:dataTable id="table" 
+                             value="#{controladorConta.listaContas}" 
+                             var="contas"
+                             emptyMessage="Não há contas cadastradas!"
+                             scrollable="true" scrollHeight="400" 
+                             reflow="true"  editable="true" editMode="cell" widgetVar="cellCars">       
+
+                    <p:ajax event="cellEdit" listener="#{controladorConta.editarCelula(contas)}" update=":form:msgs" />
+
+                    <p:column headerText="Código" >
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{contas.codConta}"/></f:facet>
+                            <f:facet name="input"><p:inputText value="#{contas.codConta}" style="width:96%"/></f:facet>
+                        </p:cellEditor>                        
+                    </p:column>
+
+                    <p:column headerText="Descrição" >
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{contas.descrConta}"/></f:facet>
+                            <f:facet name="input"><p:inputText value="#{contas.descrConta}"/></f:facet>
+                        </p:cellEditor>                        
+                    </p:column>
+                    
+                    <p:column headerText="Tipo">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{contas.tipoConta}" 
+                                                                 converter="boolTipoConverter" />
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:selectOneMenu style="width:100%" value="#{contas.tipoConta}">
+                                    <f:selectItem  itemLabel="Sintética" itemValue="true" />
+                                    <f:selectItem  itemLabel="Analítica" itemValue="false" />
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+
+                    <p:column headerText="Classe">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{contas.classeConta}"
+                                                                 converter="boolClasseConverter"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:selectOneMenu value="#{contas.classeConta}" style="width:100%">
+                                    <f:selectItem itemLabel="Devedora" itemValue="true"  />
+                                    <f:selectItem itemLabel="Credora" itemValue="false"  />
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+
+                    <p:column style="width:40px;text-align: center">
+                        <p:commandLink update="table :form:msgs" 
+                                       actionListener="#{controladorConta.removerConta(contas)}" 
+                                       immediate="true">
+                            <p:confirm header="Confirmação" message="Você tem certeza?" icon="ui-icon-alert" />
+                            <i class="fa fa-remove"></i>
+                        </p:commandLink>                    
+                    </p:column>  
+                </p:dataTable>  
+
+
+
+                <p:separator/>
+
+                <p:commandButton value="Add Conta"  
+                                 oncomplete="PF('itemDialog').show()"
+                                 process="@this" update="itemPanel">
+                    <p:resetInput target="itemPanel"/>
+                </p:commandButton>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+
+
+                <p:dialog widgetVar="itemDialog" header="Add Conta" 
+                          resizable="false" style="min-width: 500px" 
+                          responsive="true">
+                    <h:panelGroup id="itemPanel" layout="block" styleClass="ui-fluid">
+                        <p:messages id="msgDialog" autoUpdate="false"/>
+                        <p:panelGrid columns="2" columnClasses="ui-grid-col4, ui-grid-col8" layout="grid"
+                                     styleClass="panelgrid-noborder">
+
+                            <p:outputLabel value="Código:" for="txCod"/>
+                            <p:inputText id="txCod" required="true" 
+                                         value="#{controladorConta.conta.codConta}"
+                                         requiredMessage="Insira um código"/>
+
+                            <p:outputLabel value="Descrição:" for="txDesc"/>
+                            <p:inputText id="txDesc" required="true" 
+                                         value="#{controladorConta.conta.descrConta}"
+                                         requiredMessage="Insira uma descrição"/>
+
+                            <p:outputLabel value="Tipo:" for="txTipo"/>
+                            <p:selectOneRadio id="txTipo" value="#{controladorConta.conta.tipoConta}"
+                                              required="true" requiredMessage="Insira um tipo">
+                                <f:selectItem itemLabel="Sintetica" itemValue="true" />
+                                <f:selectItem itemLabel="Analitica" itemValue="false" />
+                            </p:selectOneRadio>
+
+                            <p:outputLabel value="Classe" for="txClasse"/>
+                            <p:selectOneRadio id="txClasse" value="#{controladorConta.conta.classeConta}"
+                                              required="true" requiredMessage="Insira uma classe">
+                                <f:selectItem itemLabel="Devedora" itemValue="true" />
+                                <f:selectItem itemLabel="Credora" itemValue="false" />
+                            </p:selectOneRadio>
+                            <p:commandButton value="Salvar" 
+                                             validateClient="true"
+                                             update="table itemPanel" 
+                                             action="#{controladorConta.salvarConta()}"
+                                             process="itemPanel"
+                                             oncomplete="if(!args.validationFailed) PF('itemDialog').hide()"/>
+
+
+                        </p:panelGrid>
+
+                    </h:panelGroup> 
+                </p:dialog>
+
+                <p:button value="Voltar" outcome="index"/>
+            </h:form>
+
+        </p:fieldset>
+    </h:body>
+</html>
+

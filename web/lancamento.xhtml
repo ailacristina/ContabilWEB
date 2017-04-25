@@ -1,0 +1,203 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Contábil</title>
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css"/>
+    </h:head>
+
+    <h:body>
+        <p:fieldset legend="Lançamentos" style="margin-bottom:20px">
+            <h:form id="form">
+                <p:growl id="msgs" showDetail="true" />             
+
+                <p:dataTable id="table" 
+                             value="#{controladorLanc.lancamentos}" 
+                             var="lancamento"
+                             emptyMessage="Não há lançamentos cadastradas!"
+                             scrollable="true" scrollHeight="400" 
+                             reflow="true" editable="true" editMode="cell" widgetVar="cellCars">  
+
+                    <p:ajax event="cellEdit" listener="#{controladorLanc.editarCelula(lancamento)}" update=":form:msgs" />
+
+                    <p:column headerText="Data">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{lancamento.dataLanc}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </f:facet>
+                            <f:facet name="input"><p:calendar id="modelInput" value="#{lancamento.dataLanc}" style="width:50%"/></f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                   
+                    <p:column headerText="Débito">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{lancamento.idContaD.codConta}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <h:selectOneMenu value="#{controladorLanc.contaDeb}" style="width:100%" converter="themeConverter">
+                                    <f:selectItems value="#{controladorLanc.contas}" var="conta" itemLabel="#{conta.codConta}" itemValue="#{conta}" />
+                                </h:selectOneMenu>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Color">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{lancamento.idContaD}" /></f:facet>
+                            <f:facet name="input">
+                                <h:selectOneMenu value="#{lancamento.idContaD}" style="width:100%">
+                                    <f:selectItems value="#{controladorLanc.contas}" var="color" itemLabel="#{color}" itemValue="#{color}" />
+                                </h:selectOneMenu>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Crédito">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{lancamento.idContaC.codConta}"/>
+                                <h:outputText value=" - "/>
+                                <h:outputText value="#{lancamento.idContaC.descrConta}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:selectOneMenu id="credito" value="#{controladorLanc.contaCred}" converter="themeConverter" panelStyle="width:300px"
+                                                 effect="fade" var="conta" style="width:160px" filter="true" filterMatchMode="startsWith">
+                                    <f:selectItems value="#{controladorLanc.contas}" var="conta" itemLabel="#{conta.codConta}" itemValue="#{conta}" />
+
+                                    <p:column>
+                                        <h:outputText value="#{conta.codConta}" />
+                                    </p:column>
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>                   
+
+                    <p:column headerText="Valor" style="text-align: right">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{lancamento.valorLanc}"/></f:facet>
+                            <f:facet name="input"><p:inputNumber  value="#{lancamento.valorLanc}" style="width:96%"/></f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Histórico">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{lancamento.histLanc}"/></f:facet>
+                            <f:facet name="input"><p:inputText  value="#{lancamento.histLanc}" style="width:96%"/></f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+
+                    <p:column style="width:40px;text-align: center">
+                        <p:commandLink update="table :form:msgs"
+                                       actionListener="#{controladorLanc.estornar(lancamento)}" 
+                                       immediate="true">
+                            <p:confirm header="Confirmação" message="Você tem certeza?" icon="ui-icon-alert" />
+                            <i class="fa fa-remove"></i>
+                        </p:commandLink>                    
+                    </p:column>  
+
+                </p:dataTable>  
+
+                <p:separator/>
+
+                <p:commandButton value="Add Lançamento"  
+                                 oncomplete="PF('itemDialog').show()"
+                                 process="@this" update="itemPanel">
+                    <p:resetInput target="itemPanel"/>
+                </p:commandButton>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+
+
+                <p:dialog widgetVar="itemDialog" header="Add Lançamento" 
+                          resizable="false" style="min-width: 400px" 
+                          responsive="true">
+                    <h:panelGroup id="itemPanel" layout="block" styleClass="ui-fluid">
+                        <p:messages id="msgDialog" autoUpdate="false"/>
+                        <p:panelGrid columns="2" columnClasses="ui-grid-col4, ui-grid-col8" layout="grid"
+                                     styleClass="panelgrid-noborder">
+
+                            <p:outputLabel value="Data" for="txData"/>
+                            <p:calendar id="txData"  required="true" 
+                                        value="#{controladorLanc.lanc.dataLanc}" showOn="button" />    
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+
+
+                            <p:outputLabel for="debito" value="Débito:"  />
+                            <p:selectOneMenu id="debito" value="#{controladorLanc.contaDeb}" 
+                                             converter="themeConverter" panelStyle="width:300px"
+                                             effect="fade" var="conta" style="width:160px" 
+                                             filter="true" filterMatchMode="startsWith">
+                                <f:selectItems value="#{controladorLanc.contas}" var="conta" 
+                                               itemLabel="#{conta.codConta}" itemValue="#{conta}" />
+
+                                <p:column>
+                                    <h:outputText value="#{conta.codConta}" />
+                                </p:column>
+                            </p:selectOneMenu>  
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+
+                            <p:outputLabel for="credito" value="Crédito:"  />
+                            <p:selectOneMenu id="credito" value="#{controladorLanc.contaCred}" converter="themeConverter" panelStyle="width:300px"
+                                             effect="fade" var="conta" style="width:160px" filter="true" filterMatchMode="startsWith">
+                                <f:selectItems value="#{controladorLanc.contas}" var="conta" itemLabel="#{conta.codConta}" itemValue="#{conta}" />
+
+                                <p:column>
+                                    <h:outputText value="#{conta.codConta}" />
+                                </p:column>
+                            </p:selectOneMenu>
+
+
+                            <p:outputLabel value="Valor" for="txVal"/>
+                            <p:inputNumber id="txVal" required="true" 
+                                           value="#{controladorLanc.lanc.valorLanc}"
+                                           requiredMessage="Insira um valor"/>
+
+                            <p:outputLabel value="Histórico" for="txHist"/>
+                            <p:inputText  id="txHist"
+                                          value="#{controladorLanc.lanc.histLanc}"
+                                          requiredMessage="Insira um histórico"/>
+
+
+                            <p:commandButton value="Salvar" 
+                                             validateClient="true"
+                                             update="table itemPanel" 
+                                             action="#{controladorLanc.lancar()}"
+                                             process="itemPanel"
+                                             oncomplete="if(!args.validationFailed) PF('itemDialog').hide()"/>
+
+
+                        </p:panelGrid>
+
+                    </h:panelGroup> 
+                </p:dialog>
+                <p:button value="Voltar" outcome="index"/>
+            </h:form>
+        </p:fieldset>
+    </h:body>
+</html>
+

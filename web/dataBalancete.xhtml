@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Contábil</title>
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css"/>
+    </h:head>
+
+    <h:body>
+        <p:fieldset legend="Balancete" style="margin-bottom:20px">
+            <h:form id="form">
+
+                <p:outputLabel value="Data inicial:" for="txDataI"/>
+                <p:calendar id="txDataI"  required="true" 
+                            value="#{controladorRelatorios.dataI}" showOn="button" />
+
+                <p:outputLabel value="Data final:" for="txDataF"/>
+                <p:calendar id="txDataF"  required="true" 
+                            value="#{controladorRelatorios.dataF}" showOn="button" />
+
+
+                <p:commandButton value="OK" actionListener="#{controladorRelatorios.balancete()}"
+                                 action="balancete.xhtml"/>
+
+                <p:button value="Voltar" outcome="index"/>
+
+            </h:form>
+        </p:fieldset>
+    </h:body>
+</html>
+

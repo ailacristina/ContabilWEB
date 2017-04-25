@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Contábil</title>
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css"/>
+    </h:head>
+
+    <h:body>
+        <p:fieldset legend="Razão" style="margin-bottom:20px">
+            <h:form id="form">
+                <p:growl id="msgs" showDetail="true" />             
+
+                <p:dataTable id="cars2" var="car" value="#{controladorConta.listaContas}" editable="true" editMode="cell" widgetVar="cellCars">
+                    <f:facet name="header">
+                        Cell Editing with Click and RightClick
+                    </f:facet>
+
+                    <p:ajax event="cellEdit" listener="#{controladorConta.editarCelula(car)}" update=":form:msgs" />
+
+                    <p:column headerText="Id">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{car.codConta}" /></f:facet>
+                            <f:facet name="input"><p:inputText id="modelInput" value="#{car.codConta}" style="width:96%"/></f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column headerText="Brand">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{car.classeConta}" converter="boolClasseConverter"/></f:facet>
+                            <f:facet name="input">
+                                <h:selectOneMenu value="#{car.classeConta}" style="width:100%">
+                                    <f:selectItem itemLabel="Sintetica" itemValue="true"  />
+                                    <f:selectItem itemLabel="Analítica" itemValue="false"  />
+                                </h:selectOneMenu>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    
+<p:column headerText="Tipo">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{contas.tipoConta}" converter="boolTipoConverter" /></f:facet>
+                            <f:facet name="input">
+                                <p:selectOneMenu style="width:100%" value="#{contas.tipoConta}">
+                                    <f:selectItem  itemLabel="Sintetica" itemValue="true" />
+                                    <f:selectItem  itemLabel="Analitica" itemValue="false" />
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                   
+                </p:dataTable>
+
+
+            </h:form>
+        </p:fieldset>
+    </h:body>
+</html>
+

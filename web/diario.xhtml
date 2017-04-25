@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Contábil</title>
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css"/>
+    </h:head>
+
+    <h:body>
+        <p:fieldset legend="Diário" style="margin-bottom:20px">
+            <h:form id="form">
+                <p:growl id="msgs" showDetail="true" />             
+
+                <p:dataTable id="table" 
+                             value="#{controladorLanc.lancamentos}" 
+                             var="lanc"
+                             emptyMessage="Não há lançamentos cadastrados!"
+                             scrollable="true" scrollHeight="400" 
+                             reflow="true" >                                   
+                    <p:column headerText="Data" >
+                        <h:outputText value="#{lanc.dataLanc}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Histórico">
+                        <h:outputText value="#{lanc.histLanc}"/>
+                    </p:column>
+                    <p:column headerText="Débito">
+                        <h:outputText value="#{lanc.idContaD.codConta}"/>
+                    </p:column>
+                    <p:column headerText="Crédito">
+                        <h:outputText value="#{lanc.idContaC.codConta}"/>
+                    </p:column>
+                    <p:column headerText="Valor" style="text-align: right;">
+                        <h:outputText value="#{lanc.valorLanc}"/>
+                    </p:column>   
+                    
+
+                   
+                </p:dataTable>  
+                <p:button value="Voltar" outcome="index"/>
+                </h:form>
+        </p:fieldset>
+    </h:body>
+</html>
+
